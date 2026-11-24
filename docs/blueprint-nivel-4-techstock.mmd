@@ -1,0 +1,78 @@
+flowchart LR
+
+  subgraph E["Evidências físicas"]
+    E1["Portal de login"]
+    E2["Página Banco"]
+    E3["Tabela e pesquisa"]
+    E4["Formulário de cadastro e edição"]
+    E5["Confirmação de exclusão"]
+    E6["Mensagem de resultado"]
+  end
+
+  subgraph U["Ações do usuário"]
+    U1["Acessa o Portal"]
+    U2["Informa usuário e senha"]
+    U3["Consulta e pesquisa componentes"]
+    U4["Preenche dados de um componente"]
+    U5["Edita ou solicita exclusão"]
+    U6["Confere o resultado na lista"]
+  end
+
+  subgraph F["Frontstage — interação visível"]
+    F1["Exibe o formulário de autenticação"]
+    F2["Apresenta a página Banco"]
+    F3["Mostra componentes e indicadores"]
+    F4["Recebe cadastro ou alteração"]
+    F5["Solicita confirmação para excluir"]
+    F6["Exibe mensagem e lista atualizada"]
+  end
+
+  subgraph B["Backstage — processamento interno"]
+    B1["route.py recebe as requisições"]
+    B2["Application coordena o fluxo"]
+    B3["UserRecord localiza a conta"]
+    B4["User_account confere a senha"]
+    B5["GerenciadorSessoes cria e valida a sessão"]
+    B6["ComponentRecord executa o CRUD"]
+    B7["Componente valida os campos"]
+    B8["DataRecord lê e grava os registros"]
+  end
+
+  subgraph S["Processos de suporte"]
+    S1["Bottle faz o roteamento HTTP"]
+    S2["Sessão por cookie e expiração"]
+    S3["Arquivos JSON: componentes e usuários"]
+    S4["Hash PBKDF2-HMAC-SHA256 para senhas"]
+    S5["HTML, CSS e JavaScript da interface"]
+  end
+
+  U1 --> E1 --> F1
+  U2 --> F1
+  F1 --> B1 --> B2 --> B3 --> B4 --> B5
+  B3 -. consulta .-> S3
+  B4 -. proteção da senha .-> S4
+  B5 -. controle da sessão .-> S2
+  S1 -. encaminha as rotas .-> B1
+  S5 -. apresenta as telas .-> F1
+
+  B5 --> F2
+  U3 --> E2 --> F2
+  F2 --> F3
+  F3 --> B1
+  B1 --> B2 --> B6
+  B6 --> B8
+  B8 -. lê .-> S3
+  B8 --> F3
+
+  U4 --> E4 --> F4
+  F4 --> B1 --> B2 --> B6 --> B7 --> B8
+  B8 -. grava .-> S3
+  B8 --> F6
+
+  U5 --> E5 --> F5
+  F5 --> B1 --> B2 --> B6 --> B7 --> B8
+  B8 -. atualiza ou remove .-> S3
+  B8 --> F6
+
+  U6 --> E6
+  F6 --> E3
