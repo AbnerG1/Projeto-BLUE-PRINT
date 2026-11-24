@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "nome": "Resistor 127 Ω",
+    "categoria": "Resistor",
+    "quantidade": 20,
+    "descricao": "Resistor de 1/4 W."
+  },
+  {
+    "id": 2,
+    "nome": "Capacitor 100 µF",
+    "categoria": "Capacitor",
+    "quantidade": 20,
+    "descricao": "Capacitor eletrolítico de 25 V."
+  },
+  {
+    "id": 3,
+    "nome": "ESP32 DevKit",
+    "categoria": "Microcontrolador",
+    "quantidade": 5,
+    "descricao": "Placa de desenvolvimento com Wi-Fi e Bluetooth."
+  }
+]
