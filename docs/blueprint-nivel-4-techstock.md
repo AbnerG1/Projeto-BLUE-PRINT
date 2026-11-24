@@ -1,119 +1,78 @@
 # Nível 4 — Blueprint do Serviço | TechStock
 
-Este blueprint representa a experiência de uso do TechStock e os processos que sustentam as operações do catálogo. O fluxo foi montado a partir das rotas, modelos, controladores e telas presentes no código do projeto.
+Este diagrama foi redesenhado para facilitar a leitura durante a apresentação. Ele mostra o caminho principal do serviço em três momentos: acesso, consulta do catálogo e manutenção dos componentes.
 
-## Diagrama
+## Diagrama do Blueprint
 
-O diagrama também está disponível em [formato Mermaid separado](./blueprint-nivel-4-techstock.mmd), para abrir em um editor compatível.
+O diagrama Mermaid abaixo pode ser visualizado diretamente no GitHub. Se preferir, abra o [arquivo Mermaid separado](./blueprint-nivel-4-techstock.mmd) em um editor compatível.
 
 ```mermaid
-flowchart LR
-
-  subgraph E["Evidências físicas"]
-    E1["Portal de login"]
-    E2["Página Banco"]
-    E3["Tabela e pesquisa"]
-    E4["Formulário de cadastro e edição"]
-    E5["Confirmação de exclusão"]
-    E6["Mensagem de resultado"]
+flowchart TB
+  subgraph P1["1. ACESSO"]
+    direction LR
+    U1["Usuário abre o Portal"] --> F1["Tela de login"]
+    F1 --> B1["Rota recebe credenciais"]
+    B1 --> B2["Application consulta UserRecord e User_account"]
+    B2 --> S1["JSON de usuários + hash da senha"]
+    B2 --> F2["Acesso autorizado / mensagem de erro"]
   end
 
-  subgraph U["Ações do usuário"]
-    U1["Acessa o Portal"]
-    U2["Informa usuário e senha"]
-    U3["Consulta e pesquisa componentes"]
-    U4["Preenche dados de um componente"]
-    U5["Edita ou solicita exclusão"]
-    U6["Confere o resultado na lista"]
+  subgraph P2["2. CONSULTA DO CATÁLOGO"]
+    direction LR
+    U2["Usuário abre Banco e pesquisa"] --> F3["Lista, indicadores e pesquisa"]
+    F3 --> B3["Rota chama Application"]
+    B3 --> B4["ComponentRecord consulta DataRecord"]
+    B4 --> S2["Arquivo JSON de componentes"]
+    B4 --> F4["Lista de componentes apresentada"]
   end
 
-  subgraph F["Frontstage — interação visível"]
-    F1["Exibe o formulário de autenticação"]
-    F2["Apresenta a página Banco"]
-    F3["Mostra componentes e indicadores"]
-    F4["Recebe cadastro ou alteração"]
-    F5["Solicita confirmação para excluir"]
-    F6["Exibe mensagem e lista atualizada"]
+  subgraph P3["3. MANUTENÇÃO DO CATÁLOGO"]
+    direction LR
+    U3["Usuário cadastra, edita ou exclui"] --> F5["Formulário e confirmação"]
+    F5 --> B5["Rota recebe a operação"]
+    B5 --> B6["Application coordena; Componente valida"]
+    B6 --> B7["ComponentRecord / DataRecord grava a alteração"]
+    B7 --> S2
+    B7 --> F6["Mensagem de resultado e lista atualizada"]
   end
 
-  subgraph B["Backstage — processamento interno"]
-    B1["route.py recebe as requisições"]
-    B2["Application coordena o fluxo"]
-    B3["UserRecord localiza a conta"]
-    B4["User_account confere a senha"]
-    B5["GerenciadorSessoes cria e valida a sessão"]
-    B6["ComponentRecord executa o CRUD"]
-    B7["Componente valida os campos"]
-    B8["DataRecord lê e grava os registros"]
+  subgraph SUP["SUPORTE AO SERVIÇO — presente nas etapas"]
+    direction LR
+    T1["Bottle: rotas HTTP"] --- T2["Cookie e GerenciadorSessoes"]
+    T2 --- T3["Models e Controllers"]
+    T3 --- T4["Arquivos JSON"]
+    T4 --- T5["Views: HTML, CSS e JavaScript"]
   end
 
-  subgraph S["Processos de suporte"]
-    S1["Bottle faz o roteamento HTTP"]
-    S2["Sessão por cookie e expiração"]
-    S3["Arquivos JSON: componentes e usuários"]
-    S4["Hash PBKDF2-HMAC-SHA256 para senhas"]
-    S5["HTML, CSS e JavaScript da interface"]
-  end
+  classDef user fill:#E8F1FF,stroke:#2563EB,color:#172554,stroke-width:1.5px
+  classDef front fill:#E9F8EF,stroke:#15803D,color:#14532D,stroke-width:1.5px
+  classDef back fill:#FFF4E5,stroke:#C2410C,color:#7C2D12,stroke-width:1.5px
+  classDef support fill:#F3E8FF,stroke:#7E22CE,color:#581C87,stroke-width:1.5px
+  classDef store fill:#F1F5F9,stroke:#475569,color:#0F172A,stroke-width:1.5px
 
-  U1 --> E1 --> F1
-  U2 --> F1
-  F1 --> B1 --> B2 --> B3 --> B4 --> B5
-  B3 -. consulta .-> S3
-  B4 -. proteção da senha .-> S4
-  B5 -. controle da sessão .-> S2
-  S1 -. encaminha as rotas .-> B1
-  S5 -. apresenta as telas .-> F1
-
-  B5 --> F2
-  U3 --> E2 --> F2
-  F2 --> F3
-  F3 --> B1
-  B1 --> B2 --> B6
-  B6 --> B8
-  B8 -. lê .-> S3
-  B8 --> F3
-
-  U4 --> E4 --> F4
-  F4 --> B1 --> B2 --> B6 --> B7 --> B8
-  B8 -. grava .-> S3
-  B8 --> F6
-
-  U5 --> E5 --> F5
-  F5 --> B1 --> B2 --> B6 --> B7 --> B8
-  B8 -. atualiza ou remove .-> S3
-  B8 --> F6
-
-  U6 --> E6
-  F6 --> E3
+  class U1,U2,U3 user
+  class F1,F2,F3,F4,F5,F6 front
+  class B1,B2,B3,B4,B5,B6,B7 back
+  class S1,S2 store
+  class T1,T2,T3,T4,T5 support
 ```
 
-## Leitura do fluxo
+## Como interpretar
 
-**Evidências físicas:** telas e elementos que o usuário encontra durante a utilização: Portal, página Banco, tabela, pesquisa, formulários, confirmação de exclusão e mensagens de resultado.
+- **Ações do usuário:** abrir o Portal, entrar, consultar, pesquisar e manter o catálogo.
+- **Frontstage:** telas, formulários, lista, mensagens e confirmações que o usuário vê.
+- **Backstage:** rotas, Application, registros e modelos que recebem, coordenam e validam as operações.
+- **Suporte:** Bottle, sessões, arquivos JSON e recursos da interface que sustentam o serviço.
 
-**Ações do usuário:** entrar no Portal, informar as credenciais, consultar e pesquisar componentes, cadastrar, editar, excluir e conferir o resultado.
+## Relação com o código
 
-**Frontstage:** respostas visíveis da aplicação. A interface apresenta os formulários, a lista de componentes, os indicadores do catálogo e as mensagens após cada operação.
+| Parte do Blueprint | Elementos do projeto |
+|---|---|
+| Acesso | rotas do Portal, `Application`, `UserRecord`, `User_account` e `GerenciadorSessoes` |
+| Consulta | rota Banco, `ComponentRecord` e `DataRecord` |
+| Cadastro, edição e exclusão | formulários, rotas, `Componente`, `ComponentRecord` e `DataRecord` |
+| Suporte | Bottle, cookie de sessão, JSON, HTML, CSS e JavaScript |
 
-**Backstage:** a rota recebe a requisição; a classe `Application` coordena o fluxo; `UserRecord` e `User_account` participam da autenticação; `GerenciadorSessoes` controla a sessão; `ComponentRecord` executa as operações do catálogo; `Componente` valida os campos; e `DataRecord` realiza a leitura e gravação dos dados.
+## Observação
 
-**Processos de suporte:** Bottle encaminha as requisições HTTP; o cookie identifica a sessão; os arquivos JSON mantêm os registros; PBKDF2-HMAC-SHA256 protege as senhas armazenadas; e HTML, CSS e JavaScript compõem a interface.
-
-## Relação com as operações do catálogo
-
-| Operação | Ação visível | Processamento interno |
-|---|---|---|
-| CREATE | Preencher o formulário e cadastrar | A rota recebe os campos, o modelo valida e o registro é salvo |
-| READ | Abrir a página Banco e pesquisar | O controlador consulta os registros e a página apresenta a lista |
-| UPDATE | Editar os dados e salvar | O registro é localizado, validado e gravado novamente |
-| DELETE | Solicitar exclusão e confirmar | O registro é localizado e removido da lista persistida |
-
-## Observações sobre a implementação
-
-- O catálogo é armazenado em arquivos JSON, não em SQLite.
-- A página Banco permite cadastrar, pesquisar, editar e excluir componentes.
-- As operações também permanecem disponíveis por meio da API JSON.
-- As sessões são mantidas durante a execução da aplicação e possuem prazo de expiração.
-- A senha é verificada a partir de hash com salt; ela não é armazenada em texto puro.
-
-O diagrama descreve o fluxo implementado no TechStock e não inclui funcionalidades que não aparecem no código atual.
+O catálogo utiliza arquivos JSON para persistir componentes e contas. O diagrama representa as responsabilidades e os fluxos encontrados no código atual; não representa um banco de dados relacional.
