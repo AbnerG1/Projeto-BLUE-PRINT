@@ -1,77 +1,57 @@
 flowchart TB
-  %% Nível 2 — Blueprint Desktop do TechStock
-  %% Camadas do serviço: ações, frontstage, backstage e suporte.
-
-  subgraph ACOES["1. AÇÕES DO USUÁRIO"]
+  subgraph ACOES["Ações dos usuários"]
     direction LR
-    A1["Abrir o Portal"] --> A2["Informar usuário e senha"]
-    A2 --> A3["Acessar o Banco"]
-    A3 --> A4["Consultar e pesquisar componentes"]
-    A4 --> A5["Cadastrar, editar ou excluir componente"]
+    A1["Abrir o Portal"] --> A2["Informar usuário e senha"] --> A3["Acessar o Banco"] --> A4["Consultar e pesquisar componentes"] --> A5["Preencher cadastro ou edição"] --> A6["Confirmar cadastro, atualização ou exclusão"]
   end
-
-  subgraph FRONT["2. FRONTSTAGE — O QUE O USUÁRIO VÊ"]
+  subgraph FRONT["Frontstage — o que aparece"]
     direction LR
-    F1["Página Portal<br/>formulário de login"]
-    F2["Página Banco<br/>lista e indicadores"]
-    F3["Formulários de cadastro e edição<br/>confirmação de exclusão"]
-    F4["Mensagens de sucesso ou erro<br/>lista atualizada"]
+    F1["Portal: formulário de login"] --> F2["Banco: lista de componentes"] --> F3["Pesquisa e formulários de cadastro e edição"] --> F4["Confirmação de exclusão e mensagens"]
   end
-
-  subgraph BACK["3. BACKSTAGE — PROCESSOS INTERNOS"]
+  subgraph BACK["Backstage — o que acontece"]
     direction LR
-    B1["Rota /portal<br/>recebe credenciais"]
-    B2["Application<br/>autentica com UserRecord e User_account"]
-    B3["GerenciadorSessoes<br/>cria e valida sessão"]
-    B4["Rota /banco<br/>verifica autenticação"]
-    B5["ComponentRecord<br/>lista e executa CRUD"]
-    B6["Componente<br/>valida nome, categoria,<br/>quantidade e descrição"]
-    B7["DataRecord<br/>lê e grava registros"]
+    B1["Receber credenciais e autenticar"] --> B2["Criar e validar sessão"] --> B3["Verificar autenticação para abrir o Banco"] --> B4["Listar e pesquisar componentes"] --> B5["Validar dados do componente"] --> B6["Criar, atualizar ou excluir registro"] --> B7["Ler e gravar os dados"]
   end
-
-  subgraph SUP["4. SUPORTE — RECURSOS QUE SUSTENTAM O SERVIÇO"]
+  subgraph SUP["Suporte"]
     direction LR
-    S1["Bottle<br/>servidor e rotas HTTP"]
-    S2["Cookie de sessão<br/>HttpOnly e prazo de validade"]
-    S3["Arquivos JSON<br/>contas e componentes"]
-    S4["Views e interface<br/>HTML, CSS e JavaScript"]
-    S5["Estrutura BMVC<br/>Models e Controllers"]
+    S1["Bottle e route.py: rotas HTTP"]
+    S2["Application: coordenação"]
+    S3["UserRecord e User_account: conta e autenticação"]
+    S4["GerenciadorSessoes: controle da sessão"]
+    S5["ComponentRecord e DataRecord: operações e persistência"]
+    S6["Componente: modelo e validação"]
+    S7["Arquivos JSON: contas e componentes"]
+    S8["Views, HTML, CSS e JavaScript"]
   end
-
   A1 --> F1
   A2 --> B1
   F1 --> B1
-  B1 --> B2
-  B2 --> B3
-  B3 --> F2
+  B2 --> F2
   A3 --> F2
-  F2 --> B4
-  B4 --> B3
-  B4 --> B5
   A4 --> F2
-  B5 --> F2
+  F2 --> B4
   A5 --> F3
   F3 --> B5
-  B5 --> B6
-  B6 --> B7
-  B7 --> F4
-  F4 --> F2
-
-  B1 -. utiliza .-> S1
-  B2 -. consulta .-> S3
-  B3 -. mantém .-> S2
-  B5 -. persiste por .-> S3
-  B6 -. pertence a .-> S5
-  F1 -. renderizada por .-> S4
-  F2 -. renderizada por .-> S4
-  B1 -. organizada em .-> S5
-
+  A6 --> F4
+  F4 --> B6
+  B7 --> F2
+  B1 -.-> S1
+  B1 -.-> S2
+  B1 -.-> S3
+  B2 -.-> S4
+  B3 -.-> S4
+  B4 -.-> S5
+  B5 -.-> S6
+  B6 -.-> S5
+  B7 -.-> S7
+  F1 -.-> S8
+  F2 -.-> S8
+  F3 -.-> S8
+  F4 -.-> S8
   classDef action fill:#E8F1FF,stroke:#2563EB,color:#172554,stroke-width:1.5px
   classDef front fill:#E9F8EF,stroke:#15803D,color:#14532D,stroke-width:1.5px
   classDef back fill:#FFF4E5,stroke:#C2410C,color:#7C2D12,stroke-width:1.5px
   classDef support fill:#F3E8FF,stroke:#7E22CE,color:#581C87,stroke-width:1.5px
-
-  class A1,A2,A3,A4,A5 action
+  class A1,A2,A3,A4,A5,A6 action
   class F1,F2,F3,F4 front
   class B1,B2,B3,B4,B5,B6,B7 back
-  class S1,S2,S3,S4,S5 support
+  class S1,S2,S3,S4,S5,S6,S7,S8 support
