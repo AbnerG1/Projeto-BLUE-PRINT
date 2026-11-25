@@ -116,9 +116,14 @@ O workflow do GitHub Actions também executa a suíte de testes em Python 3.10, 
 Na janela do inicializador, pressione `Ctrl + C` para parar o servidor. Os registros dos componentes e usuários permanecem salvos em `app/controllers/db/`.
 
 
-## Blueprint do serviço — Nível 4
+## Blueprints do TechStock
 
-O diagrama do Blueprint do TechStock está disponível em:
+Os diagramas do projeto estão disponíveis na pasta `docs/`:
 
+### Nível 2 — Blueprint Desktop
+- [Abrir o documento com o diagrama renderizado](./docs/blueprint-nivel-2-techstock.md)
+- [Abrir o arquivo Mermaid editável](./docs/blueprint-nivel-2-techstock.mmd)
+
+### Nível 4 — Blueprint do Serviço
 - [Abrir o documento com o diagrama renderizado](./docs/blueprint-nivel-4-techstock.md)
 - [Abrir o arquivo Mermaid editável](./docs/blueprint-nivel-4-techstock.mmd)
